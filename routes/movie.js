@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { movieDataValidation } = require('../middlewares/movieDataValidation');
 const { getOneMovieById,
         getAllMovies,
         createMovie,
@@ -9,7 +10,7 @@ const { getOneMovieById,
 
 router.route('/api/v1/movies')
     .get(getAllMovies)
-    .post(createMovie);
+    .post(movieDataValidation, createMovie);
 
 
 router.route('/api/v1/movies/:movieId')
@@ -18,4 +19,4 @@ router.route('/api/v1/movies/:movieId')
     .patch(updateOneMovieById);
 
 
-    module.exports = router;
+module.exports = router;

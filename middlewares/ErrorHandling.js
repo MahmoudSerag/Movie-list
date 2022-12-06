@@ -5,7 +5,6 @@ exports.errorHandling = (err, req, res, next) => {
   const statusCode = 400;
   let message = {};
   if (err.errors) {
-    console.log(err.errors);
     for (let key in err.errors) {
       message[key] = err.errors[key].properties.message;
     }

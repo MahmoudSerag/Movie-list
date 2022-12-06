@@ -8,7 +8,7 @@ exports.getOneMovieById = asyncHandler(async(req, res, next) => {
     const movie = await Movie.findById(req.params.movieId);
 
     if (!movie)
-        return next(new ErrorResponse(`No Movie found with Id: ${req.params.movieId}`, 404));
+        return next(new ErrorResponse(`Movie not found`, 404));
 
     res.status(200).json({
         success: true,
@@ -23,7 +23,15 @@ exports.getOneMovieById = asyncHandler(async(req, res, next) => {
 
 exports.getAllMovies = asyncHandler(async(req, res, next) => {
     
-    const movies = await Movie.find();
+    let page = parseInt(req.query.page) || 1, limit = 10;
+    if (page <= 0) page = 1;
+    
+    const movies = await Movie
+        .find()
+        .skip((page - 1) * limit)
+        .limit(limit);
+    if (movies.length === 0)
+        return next(new ErrorResponse('Not Found.', 404));
 
     res.status(200).json({
         success: true,
@@ -38,18 +46,6 @@ exports.getAllMovies = asyncHandler(async(req, res, next) => {
 
 exports.createMovie = asyncHandler(async(req, res, next) => {
 
-    const isImage = /\.(jpg|jpeg|png|webp|avif|gif|svg)$/;
-    if (!isImage.test(req.body.imageURL))
-        return next(new ErrorResponse('Invalid image url.', 400));
-
-
-    const year = req.body.year;
-    // Plus one for covering next year
-    const yearPlusOne = new Date().getFullYear() + 1;
-    if (year < 1930 || year > yearPlusOne)
-        return next(new ErrorResponse(`Year should be in range 1930 - ${yearPlusOne}`, 400));
-
-
     await Movie.create(req.body);
     res.status(201).json({
         success: true,
@@ -63,7 +59,7 @@ exports.deleteOneMovieById = asyncHandler(async(req, res, next) => {
     const movie = await Movie.findByIdAndDelete(req.params.movieId);
 
     if (!movie)
-        return next(new ErrorResponse(`No movie found with Id: ${req.params.movieId}`, 404));
+        return next(new ErrorResponse(`Movie not found`, 404));
 });
 
 
@@ -72,7 +68,7 @@ exports.updateOneMovieById = asyncHandler(async(req, res, next) => {
     const movie = await Movie.findByIdAndUpdate(req.params.movieId, req.body);
 
     if (!movie)
-        return next(new ErrorResponse(`No movie found with Id: ${req.params.movieId}`, 404));
+        return next(new ErrorResponse(`Movie not found`, 404));
 
     res.status(200).json({
         success: true,

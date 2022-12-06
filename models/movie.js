@@ -45,7 +45,7 @@ const MovieSchema = new mongoose.Schema({
     },
     imageURL: {
         type: String,
-        required: [true, 'moviePosterURL is required.']
+        required: [true, 'imageURL is required.']
     }
 });
 
